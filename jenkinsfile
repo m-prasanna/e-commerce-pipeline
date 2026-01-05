@@ -1,0 +1,49 @@
+pipeline {
+    agent any
+
+    environment {
+        // ඔයාගේ Image එකට කැමති නමක් දෙන්න
+        DOCKER_IMAGE = "my-ecommerce-app"
+        // දැනට run වන container එකක් තිබේ නම් එය අලුත් කිරීමට
+        CONTAINER_NAME = "ecommerce-container"
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                // GitHub එකෙන් code එක ලබා ගැනීම
+                checkout scm
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                echo 'Building Docker Image...'
+                sh "docker build -t ${DOCKER_IMAGE} ."
+            }
+        }
+
+        stage('Remove Old Container') {
+            steps {
+                script {
+                    // කලින් run වෙමින් පවතින container එකක් තිබේ නම් එය නවතා ඉවත් කරයි
+                    sh "docker rm -f ${CONTAINER_NAME} || true"
+                }
+            }
+        }
+
+        stage('Run Docker Container') {
+            steps {
+                echo 'Running Container on Port 8081...'
+                // Port 8081 පාවිච්චි කරන්නේ Jenkins (8080) සමඟ ගැටීම වැළැක්වීමටයි
+                sh "docker run -d -p 8081:80 --name ${CONTAINER_NAME} ${DOCKER_IMAGE}"
+            }
+        }
+    }
+
+    post {
+        success {
+            echo 'Deployment Successful! Visit http://localhost:8081'
+        }
+    }
+}
