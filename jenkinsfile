@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         // ඔයාගේ Image එකට කැමති නමක් දෙන්න
-        DOCKER_IMAGE = "my-ecommerce-app"
+        DOCKER_IMAGE = "my-ecommerce-website"
         // දැනට run වන container එකක් තිබේ නම් එය අලුත් කිරීමට
         CONTAINER_NAME = "ecommerce-container"
     }
